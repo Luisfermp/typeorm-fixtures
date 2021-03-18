@@ -17,7 +17,9 @@ export class TypeormFixtures<AllFixtures = any[]> {
   private fixtures: Record<string, { fixtures: (loadedFixtures: any) => any[]; Entity: ObjectType<any> }> = {};
   private findFixtures: Record<string, { findCondition: any; Entity: ObjectType<any> }> = {};
 
-  constructor(public readonly debug: boolean = false) {}
+  constructor(public readonly debug: boolean = false, connection: Connection) {
+    this.connection = connection;
+  }
 
   public loadFixtures = async (): Promise<Record<string, any[]>> => {
     await this.getConnection();
@@ -119,6 +121,9 @@ export class TypeormFixtures<AllFixtures = any[]> {
   }
 
   private async getConnection() {
+    if(this.connection) {
+      return this.connection;
+    }
     let config = null;
     try {
       config = require(`${process.cwd()}/ormconfig.js`);
